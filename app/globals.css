@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+	--background: 255 255 255;
+	--foreground: 17 24 39;
+}
+
+html, body {
+	height: 100%;
+}
+
+body {
+	color: rgb(var(--foreground));
+	background: rgb(var(--background));
+}
+
+.container {
+	@apply mx-auto max-w-7xl px-6;
+}
+
+.btn-primary {
+	@apply inline-flex items-center justify-center rounded-md bg-brand px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-brand-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand;
+}
