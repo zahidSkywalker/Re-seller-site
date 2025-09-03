@@ -9,7 +9,7 @@ export async function POST(req: Request) {
 	const sig = req.headers.get('stripe-signature')
 	if (!sig) return new NextResponse('Missing signature', { status: 400 })
 
-	const stripe = new Stripe(env.STRIPE_SECRET_KEY, { apiVersion: '2024-06-20' })
+	const stripe = new Stripe(env.STRIPE_SECRET_KEY)
 	let event: Stripe.Event
 	try {
 		event = stripe.webhooks.constructEvent(body, sig, env.STRIPE_WEBHOOK_SECRET)
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 	}
 
 	if (event.type === 'checkout.session.completed') {
-		const session = event.data.object as Stripe.Checkout.Session
+		const session = event.data.object as any
 		if (session.id) {
 			await prisma.order.updateMany({
 				where: { stripeSessionId: session.id },
