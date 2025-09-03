@@ -1,12 +1,11 @@
 "use client"
 import Container from '@/components/Container'
-import { prisma } from '@/lib/prisma'
 import { useEffect, useState } from 'react'
 
 async function fetchListings(q: string) {
 	const params = new URLSearchParams()
 	if (q) params.set('q', q)
-	const res = await fetch('/api/listings', { cache: 'no-store' })
+	const res = await fetch(`/api/listings?${params.toString()}`, { cache: 'no-store' })
 	const data = await res.json()
 	return data.listings as Array<any>
 }
@@ -33,7 +32,7 @@ export default function ListingsPage() {
 					<input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search" className="w-full max-w-md rounded-md border px-3 py-2" />
 				</div>
 				<div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-					{listings.filter((l) => l.title.toLowerCase().includes(query.toLowerCase())).map((l) => (
+					{listings.map((l) => (
 						<div key={l.id} className="rounded-xl border bg-white p-6 shadow-sm">
 							<h3 className="text-lg font-semibold">{l.title}</h3>
 							<p className="mt-2 text-sm text-gray-600">{l.description}</p>

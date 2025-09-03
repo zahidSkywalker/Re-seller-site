@@ -20,7 +20,7 @@ export async function POST(req: Request) {
 	const listing = await prisma.listing.findUnique({ where: { id: parsed.data.listingId } })
 	if (!listing) return new NextResponse('Listing not found', { status: 404 })
 
-	const stripe = new Stripe(env.STRIPE_SECRET_KEY!, { apiVersion: '2024-06-20' })
+	const stripe = new Stripe(env.STRIPE_SECRET_KEY!)
 	const checkout = await stripe.checkout.sessions.create({
 		mode: 'payment',
 		line_items: [
