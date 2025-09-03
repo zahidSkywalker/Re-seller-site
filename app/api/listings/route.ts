@@ -10,8 +10,8 @@ export async function GET(req: Request) {
 	const listings = await prisma.listing.findMany({
 		where: q ? {
 			OR: [
-				{ title: { contains: q, mode: 'insensitive' } },
-				{ description: { contains: q, mode: 'insensitive' } },
+				{ title: { contains: q } },
+				{ description: { contains: q } },
 			],
 		} : undefined,
 		include: { publisher: true },
