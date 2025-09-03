@@ -13,14 +13,22 @@ model User {
 	name      String?
 	password  String
 	role      String   @default("USER")
+	bio       String?
+	avatarUrl String?
+	websiteUrl String?
 	createdAt DateTime @default(now())
 	updatedAt DateTime @updatedAt
 	listings  Listing[]
 	orders    Order[]   @relation("BuyerOrders")
+	reviews   Review[]  @relation("UserReviews")
+	messages  Message[] @relation("UserMessages")
+	buyerConversations     Conversation[] @relation("BuyerConversations")
+	publisherConversations Conversation[] @relation("PublisherConversations")
 }
 
 model Listing {
 	id          String   @id @default(cuid())
+	slug        String   @unique @default(cuid())
 	title       String
 	description String
 	priceCents  Int
@@ -29,6 +37,8 @@ model Listing {
 	createdAt   DateTime @default(now())
 	updatedAt   DateTime @updatedAt
 	orders      Order[]
+	reviews     Review[]
+	categories  ListingCategory[]
 }
 
 model Order {
@@ -38,6 +48,59 @@ model Order {
 	listing    Listing  @relation(fields: [listingId], references: [id])
 	listingId  String
 	status     String   @default("PENDING")
+	stripeSessionId   String?
+	stripePaymentIntentId String?
+	paidAt     DateTime?
 	createdAt  DateTime @default(now())
 	updatedAt  DateTime @updatedAt
+}
+
+model Category {
+	id    String @id @default(cuid())
+	name  String @unique
+	slug  String @unique
+	listings ListingCategory[]
+}
+
+model ListingCategory {
+	listingId  String
+	categoryId String
+	listing    Listing  @relation(fields: [listingId], references: [id])
+	category   Category @relation(fields: [categoryId], references: [id])
+
+	@@id([listingId, categoryId])
+}
+
+model Review {
+	id         String   @id @default(cuid())
+	rating     Int
+	comment    String?
+	reviewer   User     @relation("UserReviews", fields: [reviewerId], references: [id])
+	reviewerId String
+	listing    Listing  @relation(fields: [listingId], references: [id])
+	listingId  String
+	createdAt  DateTime @default(now())
+}
+
+model Conversation {
+	id          String   @id @default(cuid())
+	buyer       User     @relation("BuyerConversations", fields: [buyerId], references: [id])
+	buyerId     String
+	publisher   User     @relation("PublisherConversations", fields: [publisherId], references: [id])
+	publisherId String
+	messages    Message[]
+	createdAt   DateTime @default(now())
+
+	@@unique([buyerId, publisherId])
+}
+
+model Message {
+	id             String   @id @default(cuid())
+	conversation   Conversation @relation(fields: [conversationId], references: [id])
+	conversationId String
+	sender         User @relation("UserMessages", fields: [senderId], references: [id])
+	senderId       String
+	content        String
+	readAt         DateTime?
+	createdAt      DateTime @default(now())
 }

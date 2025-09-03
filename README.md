@@ -55,3 +55,22 @@ Notes:
 6. Create a Render PostgreSQL instance and copy its `Internal Database URL` to `DATABASE_URL`
 
 Optional: use `render.yaml` for IaC provisioning.
+
+## Payments (Stripe)
+- Set env vars:
+  - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+  - STRIPE_SECRET_KEY
+  - STRIPE_WEBHOOK_SECRET
+- Create a webhook endpoint on Stripe pointing to `/api/stripe/webhook`
+- Local webhook forwarding: `stripe listen --forward-to localhost:3000/api/stripe/webhook`
+- Create a session via Buy button on listings; success/cancel pages are included.
+
+## Vercel (Stripe)
+- Add the above Stripe env vars in Project Settings → Environment Variables
+- Add a Production webhook in Stripe to your Vercel domain `/api/stripe/webhook`
+- Ensure `NEXTAUTH_URL` is set to the Vercel domain
+
+## Render (Stripe)
+- Add the above Stripe env vars in the web service
+- Add a webhook in Stripe to your Render domain `/api/stripe/webhook`
+- Ensure `NEXTAUTH_URL` is set to the Render domain

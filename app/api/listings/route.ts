@@ -4,8 +4,19 @@ import { getServerSession } from 'next-auth'
 import { authConfig } from '@/server/auth'
 import { prisma } from '@/lib/prisma'
 
-export async function GET() {
-	const listings = await prisma.listing.findMany({ include: { publisher: true }, orderBy: { createdAt: 'desc' } })
+export async function GET(req: Request) {
+	const { searchParams } = new URL(req.url)
+	const q = searchParams.get('q')?.toLowerCase()
+	const listings = await prisma.listing.findMany({
+		where: q ? {
+			OR: [
+				{ title: { contains: q, mode: 'insensitive' } },
+				{ description: { contains: q, mode: 'insensitive' } },
+			],
+		} : undefined,
+		include: { publisher: true },
+		orderBy: { createdAt: 'desc' },
+	})
 	return NextResponse.json({ listings })
 }
 
