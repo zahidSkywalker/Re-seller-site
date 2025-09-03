@@ -10,7 +10,7 @@ const BodySchema = z.object({ listingId: z.string().min(1) })
 
 export async function POST(req: Request) {
 	if (!env.STRIPE_SECRET_KEY) return new NextResponse('Stripe not configured', { status: 400 })
-	const sessionData = await getServerSession(authConfig as any)
+	const sessionData = (await getServerSession(authConfig as any)) as any
 	if (!sessionData?.user?.id) return new NextResponse('Unauthorized', { status: 401 })
 
 	const json = await req.json().catch(() => null)
